@@ -31,6 +31,9 @@ func main() {
 
 	fmt.Println("start at port:", os.Getenv("PORT"))
 
+	expenseRoutes := e.Group("/expenses")
+	expenseRoutes.POST("", expense.CreateExpensesHandler)
+
 	shutdown := make(chan os.Signal, 1)
 	signal.Notify(shutdown, os.Interrupt)
 	<-shutdown

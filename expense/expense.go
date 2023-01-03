@@ -1,7 +1,7 @@
 package expense
 
-type Expense struct {
-	Id    int      `json:"id`
+type Expenses struct {
+	Id    int      `json:"id"`
 	Title string   `json:"title"`
 	Note  string   `json:"note"`
 	Tags  []string `json:"tags"`

@@ -9,12 +9,15 @@ import (
 	"os/signal"
 	"time"
 
+	"github.com/wichaisw/assessment/expense"
+
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 )
 
 func main() {
 	e := echo.New()
+	expense.InitDb()
 
 	e.Use(middleware.Logger())
 	e.Use(middleware.Recover())

@@ -25,10 +25,8 @@ var (
 )
 
 func TestCreateExpensesHandler(t *testing.T) {
-
+	// ARRANGE
 	e := echo.New()
-	defer e.Close()
-
 	req := httptest.NewRequest(http.MethodPost, "/expenses", strings.NewReader(expenseJson))
 	req.Header.Set(echo.HeaderContentType, echo.MIMEApplicationJSON)
 	rec := httptest.NewRecorder()
@@ -39,14 +37,17 @@ func TestCreateExpensesHandler(t *testing.T) {
 		t.Fatalf("Error while opening stub database connection: %s", err)
 	}
 	defer mockDb.Close()
-	newMockRows := sqlmock.NewRows([]string{"id"}).AddRow(1)
 	query := `INSERT INTO expenses (title, amount, note, tags) values ($1, $2, $3, $4) RETURNING id`
+	newMockRows := sqlmock.NewRows([]string{"id"}).AddRow(1)
 	mock.ExpectQuery(regexp.QuoteMeta(query)).WithArgs("buy a new phone", 39000.0, "buy a new phone", pq.Array([]string{"gadget", "shopping"})).WillReturnRows(newMockRows)
 	mockH := InjectHandler(mockDb)
 
-	// Assertions
-	if assert.NoError(t, mockH.CreateExpensesHandler(c)) {
+	// ACT
+	err = mockH.CreateExpensesHandler(c)
+
+	// ASSERTION
+	if assert.NoError(t, err) {
 		assert.Equal(t, http.StatusCreated, rec.Code)
-		assert.Equal(t, expectedRes+"\n", rec.Body.String())
+		assert.Equal(t, expectedRes, strings.TrimSpace(rec.Body.String()))
 	}
 }

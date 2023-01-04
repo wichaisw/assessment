@@ -38,6 +38,7 @@ func main() {
 
 	e.GET("/health", health.GetHealthHandler)
 	expenseRoutes := e.Group("/expenses")
+	expenseRoutes.GET("/:id", h.GetExpensesById)
 	expenseRoutes.POST("", h.CreateExpenses)
 
 	shutdown := make(chan os.Signal, 1)

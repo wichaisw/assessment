@@ -10,6 +10,7 @@ import (
 	"time"
 
 	"github.com/wichaisw/assessment/expense"
+	"github.com/wichaisw/assessment/health"
 
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
@@ -32,10 +33,12 @@ func main() {
 	fmt.Println("start at port:", os.Getenv("PORT"))
 
 	// inject real
+
 	h := expense.NewHandler(expense.GetDb())
 
+	e.GET("/health", health.GetHealthHandler)
 	expenseRoutes := e.Group("/expenses")
-	expenseRoutes.POST("", (h.CreateExpenses))
+	expenseRoutes.POST("", h.CreateExpenses)
 
 	shutdown := make(chan os.Signal, 1)
 	signal.Notify(shutdown, os.Interrupt)

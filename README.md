@@ -25,7 +25,7 @@ docker build -t {APP_NAME} .
 ```
 docker run -e {DATABASE_URL} -e {PORT} -p {HOST_PORT}:{CONTAINER_PORT} {APP_NAME}
 ```
-- e.g. docker run -e DATABASE_URL=postgres://xxx:xxx@host.com/database -e PORT=:2565 expense-app
+- e.g. docker run -e DATABASE_URL=postgres://xxx:xxx@host.com/database -e PORT=:2565 -p 2565:2565 expense-app
 
 # Testing
 ## Unit Testing

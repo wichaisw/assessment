@@ -1,3 +1,5 @@
+//go:build unit
+
 package expense
 
 import (
@@ -24,7 +26,7 @@ var (
 	expectedRes = `{"id":1,"title":"buy a new phone","amount":39000,"note":"buy a new phone","tags":["gadget","shopping"]}`
 )
 
-func TestCreateExpensesHandler(t *testing.T) {
+func TestCreateExpenses(t *testing.T) {
 	// ARRANGE
 	e := echo.New()
 	req := httptest.NewRequest(http.MethodPost, "/expenses", strings.NewReader(expenseJson))
@@ -40,10 +42,10 @@ func TestCreateExpensesHandler(t *testing.T) {
 	query := `INSERT INTO expenses (title, amount, note, tags) values ($1, $2, $3, $4) RETURNING id`
 	newMockRows := sqlmock.NewRows([]string{"id"}).AddRow(1)
 	mock.ExpectQuery(regexp.QuoteMeta(query)).WithArgs("buy a new phone", 39000.0, "buy a new phone", pq.Array([]string{"gadget", "shopping"})).WillReturnRows(newMockRows)
-	mockH := InjectHandler(mockDb)
+	mockH := NewHandler(mockDb)
 
 	// ACT
-	err = mockH.CreateExpensesHandler(c)
+	err = mockH.CreateExpenses(c)
 
 	// ASSERTION
 	if assert.NoError(t, err) {

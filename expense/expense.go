@@ -19,7 +19,7 @@ type (
 	}
 )
 
-func InjectHandler(db *sql.DB) *Handler {
+func NewHandler(db *sql.DB) *Handler {
 	return &Handler{
 		db: db,
 	}

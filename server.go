@@ -31,11 +31,11 @@ func main() {
 
 	fmt.Println("start at port:", os.Getenv("PORT"))
 
-	// inject real DB
-	h := expense.Handler(*expense.InjectHandler(expense.GetDb()))
+	// inject real
+	h := expense.NewHandler(expense.GetDb())
 
 	expenseRoutes := e.Group("/expenses")
-	expenseRoutes.POST("", (h.CreateExpensesHandler))
+	expenseRoutes.POST("", (h.CreateExpenses))
 
 	shutdown := make(chan os.Signal, 1)
 	signal.Notify(shutdown, os.Interrupt)

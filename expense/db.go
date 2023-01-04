@@ -33,3 +33,7 @@ func InitDb() {
 
 	log.Println("expenses table created")
 }
+
+func GetDb() *sql.DB {
+	return db
+}

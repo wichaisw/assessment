@@ -55,18 +55,20 @@ func TestIntegrationUpdateExpenseById(t *testing.T) {
 	assert.NoError(t, err)
 	req.Header.Set(echo.HeaderContentType, echo.MIMEApplicationJSON)
 	client := http.Client{}
+	expectedRes := `{"id":2,"title":"buy a new phone","amount":32000,"note":"discounted","tags":["gadget","shopping"]}`
 
 	// Act
 	resp, err := client.Do(req)
 	assert.NoError(t, err)
 
+	// Assertion
 	byteBody, err := ioutil.ReadAll(resp.Body)
 	assert.NoError(t, err)
 	resp.Body.Close()
 
 	if assert.NoError(t, err) {
 		a1 := assert.Equal(t, http.StatusOK, resp.StatusCode)
-		a2 := assert.Equal(t, "\"success\"\n", string(byteBody))
+		a2 := assert.Equal(t, expectedRes, strings.TrimSpace(string(byteBody)))
 		if a1 && a2 == false {
 			ec.Shutdown(ctx)
 		}

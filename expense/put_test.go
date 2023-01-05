@@ -38,15 +38,15 @@ func TestUpdateExpenseById(t *testing.T) {
 		newMockRows := sqlmock.NewRows([]string{"id"}).AddRow(2)
 		mock.ExpectQuery(regexp.QuoteMeta(query)).WithArgs("buy a new phone", 32000.0, "discounted", pq.Array(&[]string{"gadget", "shopping"}), "2").WillReturnRows(newMockRows)
 		mockH := NewHandler(mockDb)
+		expectedRes := `{"id":2,"title":"buy a new phone","amount":32000,"note":"discounted","tags":["gadget","shopping"]}`
 
 		// ACT
 		err = mockH.UpdateExpenseById(c)
 
 		// ASSERTION
-
 		if assert.NoError(t, err) {
 			assert.Equal(t, http.StatusOK, rec.Code)
-			assert.Equal(t, "\"success\"\n", rec.Body.String())
+			assert.Equal(t, expectedRes, strings.TrimSpace(rec.Body.String()))
 
 		}
 		if err := mock.ExpectationsWereMet(); err != nil {

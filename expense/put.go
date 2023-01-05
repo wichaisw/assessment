@@ -30,7 +30,7 @@ func (h *Handler) UpdateExpenseById(c echo.Context) error {
 	case sql.ErrNoRows:
 		return c.JSON(http.StatusNotFound, Err{Message: "Updating target not found"})
 	case nil:
-		return c.JSON(http.StatusNoContent, nil)
+		return c.JSON(http.StatusOK, "success")
 	default:
 		return c.JSON(http.StatusInternalServerError, Err{Message: "Error updating expenses by id on DB: " + err.Error()})
 	}

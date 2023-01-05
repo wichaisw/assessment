@@ -65,8 +65,8 @@ func TestIntegrationUpdateExpenseById(t *testing.T) {
 	resp.Body.Close()
 
 	if assert.NoError(t, err) {
-		a1 := assert.Equal(t, http.StatusNoContent, resp.StatusCode)
-		a2 := assert.Equal(t, "", strings.TrimSpace(string(byteBody)))
+		a1 := assert.Equal(t, http.StatusOK, resp.StatusCode)
+		a2 := assert.Equal(t, "\"success\"\n", string(byteBody))
 		if a1 && a2 == false {
 			ec.Shutdown(ctx)
 		}

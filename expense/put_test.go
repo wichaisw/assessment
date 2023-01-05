@@ -43,9 +43,10 @@ func TestUpdateExpenseById(t *testing.T) {
 		err = mockH.UpdateExpenseById(c)
 
 		// ASSERTION
+
 		if assert.NoError(t, err) {
-			assert.Equal(t, http.StatusNoContent, rec.Code)
-			assert.Equal(t, "null", strings.TrimSpace(rec.Body.String()))
+			assert.Equal(t, http.StatusOK, rec.Code)
+			assert.Equal(t, "\"success\"\n", rec.Body.String())
 
 		}
 		if err := mock.ExpectationsWereMet(); err != nil {

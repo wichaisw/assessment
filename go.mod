@@ -3,10 +3,10 @@ module github.com/wichaisw/assessment
 go 1.19
 
 require (
+	github.com/DATA-DOG/go-sqlmock v1.5.0
 	github.com/labstack/echo/v4 v4.10.0
 	github.com/lib/pq v1.10.7
 	github.com/stretchr/testify v1.8.1
-	gopkg.in/DATA-DOG/go-sqlmock.v1 v1.3.0
 )
 
 require (

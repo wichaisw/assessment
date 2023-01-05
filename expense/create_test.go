@@ -9,10 +9,10 @@ import (
 	"strings"
 	"testing"
 
+	"github.com/DATA-DOG/go-sqlmock"
 	"github.com/labstack/echo/v4"
 	"github.com/lib/pq"
 	"github.com/stretchr/testify/assert"
-	"gopkg.in/DATA-DOG/go-sqlmock.v1"
 )
 
 var (
@@ -39,6 +39,7 @@ func TestCreateExpenses(t *testing.T) {
 		t.Fatalf("Error while opening stub database connection: %s", err)
 	}
 	defer mockDb.Close()
+
 	query := `INSERT INTO expenses (title, amount, note, tags) values ($1, $2, $3, $4) RETURNING id`
 	newMockRows := sqlmock.NewRows([]string{"id"}).AddRow(1)
 	mock.ExpectQuery(regexp.QuoteMeta(query)).WithArgs("buy a new phone", 39000.0, "buy a new phone", pq.Array([]string{"gadget", "shopping"})).WillReturnRows(newMockRows)

@@ -64,4 +64,9 @@ func TestIntegrationCreateExpenses(t *testing.T) {
 		assert.Equal(t, http.StatusCreated, resp.StatusCode)
 		assert.Equal(t, expectedRes, strings.TrimSpace(string(byteBody)))
 	}
+
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+	err = ec.Shutdown(ctx)
+	assert.NoError(t, err)
 }

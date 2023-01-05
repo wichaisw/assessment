@@ -22,6 +22,8 @@ func TestIntegrationUpdateExpenseById(t *testing.T) {
 	ec := echo.New()
 	serverPort := 3001
 	connString := "postgresql://root:root@db/expensedb?sslmode=disable"
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
 
 	go func(e *echo.Echo) {
 		db, err := sql.Open("postgres", connString)
@@ -63,12 +65,13 @@ func TestIntegrationUpdateExpenseById(t *testing.T) {
 	resp.Body.Close()
 
 	if assert.NoError(t, err) {
-		assert.Equal(t, http.StatusNoContent, resp.StatusCode)
-		assert.Equal(t, "", strings.TrimSpace(string(byteBody)))
+		a1 := assert.Equal(t, http.StatusNoContent, resp.StatusCode)
+		a2 := assert.Equal(t, "", strings.TrimSpace(string(byteBody)))
+		if a1 && a2 == false {
+			ec.Shutdown(ctx)
+		}
 	}
 
-	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
-	defer cancel()
 	err = ec.Shutdown(ctx)
 	t.Logf("Port:%d is shut down", serverPort)
 	assert.NoError(t, err)

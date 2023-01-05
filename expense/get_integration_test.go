@@ -22,6 +22,8 @@ func TestIntegrationGetExpenseById(t *testing.T) {
 	ec := echo.New()
 	serverPort := 3001
 	connString := "postgresql://root:root@db/expensedb?sslmode=disable"
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
 
 	go func(e *echo.Echo) {
 		db, err := sql.Open("postgres", connString)
@@ -64,12 +66,14 @@ func TestIntegrationGetExpenseById(t *testing.T) {
 	expectedRes := `{"id":1,"title":"strawberry smoothie","amount":79,"note":"night market promotion discount 10 bath","tags":["food","beverage"]}`
 
 	if assert.NoError(t, err) {
-		assert.Equal(t, http.StatusOK, resp.StatusCode)
-		assert.Equal(t, expectedRes, strings.TrimSpace(string(byteBody)))
+		a1 := assert.Equal(t, http.StatusOK, resp.StatusCode)
+		a2 := assert.Equal(t, expectedRes, strings.TrimSpace(string(byteBody)))
+
+		if a1 && a2 == false {
+			ec.Shutdown(ctx)
+		}
 	}
 
-	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
-	defer cancel()
 	err = ec.Shutdown(ctx)
 	t.Logf("Port:%d is shut down", serverPort)
 	assert.NoError(t, err)

@@ -38,10 +38,11 @@ func main() {
 
 	e.GET("/health", health.GetHealthHandler)
 	expenseRoutes := e.Group("/expenses")
+	expenseRoutes.Use(authorizationVerify)
 	expenseRoutes.GET("/:id", h.GetExpenseById)
-	expenseRoutes.GET("", h.GetAllExpenses)
 	expenseRoutes.POST("", h.CreateExpense)
 	expenseRoutes.PUT("/:id", h.UpdateExpenseById)
+	expenseRoutes.GET("", h.GetAllExpenses)
 
 	shutdown := make(chan os.Signal, 1)
 	signal.Notify(shutdown, os.Interrupt)
@@ -51,5 +52,15 @@ func main() {
 
 	if err := e.Shutdown(ctx); err != nil {
 		log.Fatal(err)
+	}
+}
+
+func authorizationVerify(next echo.HandlerFunc) echo.HandlerFunc {
+	return func(c echo.Context) error {
+		authorizationToken := c.Request().Header.Get("Authorization")
+		if authorizationToken != "November 10, 2009" {
+			return c.JSON(http.StatusUnauthorized, "Invalid Authorization Token")
+		}
+		return next(c)
 	}
 }

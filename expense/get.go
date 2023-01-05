@@ -8,24 +8,24 @@ import (
 	"github.com/lib/pq"
 )
 
-func (h *Handler) GetExpensesById(c echo.Context) error {
+func (h *Handler) GetExpenseById(c echo.Context) error {
+	ex := new(Expense)
 	expenseId := c.Param("id")
-	stmt, err := h.db.Prepare("SELECT * FROM expenses WHERE id = $1")
-	defer stmt.Close()
-
+	query := `SELECT id, title, amount, note, tags FROM expenses WHERE id = $1`
+	stmt, err := h.db.Prepare(query)
 	if err != nil {
 		return c.JSON(http.StatusBadRequest, Err{Message: "Couldn't prepare GetExpenseById statement, parameter might be invalid: " + err.Error()})
 	}
 
-	e := new(Expense)
 	row := stmt.QueryRow(expenseId)
-	err = row.Scan(&e.Id, &e.Title, &e.Amount, &e.Note, pq.Array(&e.Tags))
+	err = row.Scan(&ex.Id, &ex.Title, &ex.Amount, &ex.Note, pq.Array(&ex.Tags))
+	defer stmt.Close()
 
 	switch err {
 	case sql.ErrNoRows:
 		return c.JSON(http.StatusNotFound, Err{Message: "expense not found"})
 	case nil:
-		return c.JSON(http.StatusOK, e)
+		return c.JSON(http.StatusOK, ex)
 	default:
 		return c.JSON(http.StatusInternalServerError, Err{Message: "Error getting expenses by id on DB: " + err.Error()})
 	}

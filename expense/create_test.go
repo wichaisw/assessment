@@ -47,7 +47,9 @@ func TestCreateExpenses(t *testing.T) {
 
 	// ACT
 	err = mockH.CreateExpenses(c)
-
+	if err := mock.ExpectationsWereMet(); err != nil {
+		t.Errorf("there were unfulfilled expectations: %s", err)
+	}
 	// ASSERTION
 	if assert.NoError(t, err) {
 		assert.Equal(t, http.StatusCreated, rec.Code)

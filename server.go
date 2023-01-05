@@ -40,6 +40,7 @@ func main() {
 	expenseRoutes := e.Group("/expenses")
 	expenseRoutes.GET("/:id", h.GetExpenseById)
 	expenseRoutes.POST("", h.CreateExpenses)
+	expenseRoutes.PUT("/:id", h.UpdateExpenseById)
 
 	shutdown := make(chan os.Signal, 1)
 	signal.Notify(shutdown, os.Interrupt)

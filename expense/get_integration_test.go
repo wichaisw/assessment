@@ -21,9 +21,10 @@ import (
 func TestIntegrationGetExpenseById(t *testing.T) {
 	ec := echo.New()
 	serverPort := 3001
+	connString := "postgresql://root:root@db/expensedb?sslmode=disable"
 
 	go func(e *echo.Echo) {
-		db, err := sql.Open("postgres", "postgresql://root:root@db/expensedb?sslmode=disable")
+		db, err := sql.Open("postgres", connString)
 		if err != nil {
 			log.Fatal(err)
 		}
@@ -70,5 +71,6 @@ func TestIntegrationGetExpenseById(t *testing.T) {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 	err = ec.Shutdown(ctx)
+	t.Logf("Port:%d is shut down", serverPort)
 	assert.NoError(t, err)
 }

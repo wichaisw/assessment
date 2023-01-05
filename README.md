@@ -35,5 +35,5 @@ go test -v -tags=unit ./...
 
 ## Integration Testing in Docker Sandbox
 ```
-docker compose -f docker-compose.test.yaml up
+docker compose -f docker-compose.test.yaml up --build --force-recreate -V
 ```

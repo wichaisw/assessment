@@ -18,7 +18,7 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestIntegrationCreateExpenses(t *testing.T) {
+func TestIntegrationUpdateExpenseById(t *testing.T) {
 	ec := echo.New()
 	serverPort := 3001
 	connString := "postgresql://root:root@db/expensedb?sslmode=disable"
@@ -30,7 +30,7 @@ func TestIntegrationCreateExpenses(t *testing.T) {
 		}
 		h := NewHandler(db)
 
-		e.POST("/expenses", h.CreateExpenses)
+		e.PUT("/expenses/:id", h.UpdateExpenseById)
 		e.Start(fmt.Sprintf(":%d", serverPort))
 		defer db.Close()
 	}(ec)
@@ -47,8 +47,9 @@ func TestIntegrationCreateExpenses(t *testing.T) {
 	}
 
 	// Arrange
-	reqBody := `{"title":"buy a new phone","amount":39000,"note":"buy a new phone","tags":["gadget","shopping"]}`
-	req, err := http.NewRequest(http.MethodPost, fmt.Sprintf("http://localhost:%d/expenses", serverPort), strings.NewReader(reqBody))
+	expenseId := 2
+	reqBody := `{"title":"buy a new phone","amount":32000,"note":"discounted","tags":["gadget","shopping"]}`
+	req, err := http.NewRequest(http.MethodPut, fmt.Sprintf("http://localhost:%d/expenses/%d", serverPort, expenseId), strings.NewReader(reqBody))
 	assert.NoError(t, err)
 	req.Header.Set(echo.HeaderContentType, echo.MIMEApplicationJSON)
 	client := http.Client{}
@@ -61,11 +62,9 @@ func TestIntegrationCreateExpenses(t *testing.T) {
 	assert.NoError(t, err)
 	resp.Body.Close()
 
-	expectedRes := `{"id":3,"title":"buy a new phone","amount":39000,"note":"buy a new phone","tags":["gadget","shopping"]}`
-
 	if assert.NoError(t, err) {
-		assert.Equal(t, http.StatusCreated, resp.StatusCode)
-		assert.Equal(t, expectedRes, strings.TrimSpace(string(byteBody)))
+		assert.Equal(t, http.StatusNoContent, resp.StatusCode)
+		assert.Equal(t, "", strings.TrimSpace(string(byteBody)))
 	}
 
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)

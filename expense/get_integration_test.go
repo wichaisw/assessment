@@ -5,6 +5,7 @@ package expense
 import (
 	"context"
 	"database/sql"
+	"encoding/json"
 	"fmt"
 	"io/ioutil"
 	"log"
@@ -17,6 +18,70 @@ import (
 	"github.com/labstack/echo/v4"
 	"github.com/stretchr/testify/assert"
 )
+
+func TestIntegrationGetAllExpenses(t *testing.T) {
+	ec := echo.New()
+	serverPort := 3001
+	connString := "postgresql://root:root@db/expensedb?sslmode=disable"
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+
+	go func(e *echo.Echo) {
+		db, err := sql.Open("postgres", connString)
+		if err != nil {
+			log.Fatal(err)
+		}
+		h := NewHandler(db)
+
+		e.GET("/expenses", h.GetAllExpenses)
+		e.Start(fmt.Sprintf(":%d", serverPort))
+		defer db.Close()
+	}(ec)
+
+	for {
+		conn, err := net.DialTimeout("tcp", fmt.Sprintf("localhost:%d", serverPort), 30*time.Second)
+		if err != nil {
+			log.Println(err)
+		}
+		if conn != nil {
+			conn.Close()
+			break
+		}
+	}
+
+	// Arrange
+	req, err := http.NewRequest(http.MethodGet, fmt.Sprintf("http://localhost:%d/expenses", serverPort), nil)
+	assert.NoError(t, err)
+	req.Header.Set(echo.HeaderContentType, echo.MIMEApplicationJSON)
+	client := http.Client{}
+
+	// Act
+	resp, err := client.Do(req)
+	assert.NoError(t, err)
+
+	byteBody, err := ioutil.ReadAll(resp.Body)
+	assert.NoError(t, err)
+	resp.Body.Close()
+
+	expenses := []Expense{}
+	err = json.Unmarshal([]byte(byteBody), &expenses)
+	if err != nil {
+		t.Error("Error unmarshalling expense byteBody in IT test")
+	}
+
+	if assert.NoError(t, err) {
+		a1 := assert.Equal(t, http.StatusOK, resp.StatusCode)
+		a2 := assert.GreaterOrEqual(t, len(expenses), 2)
+
+		if a1 && a2 == false {
+			ec.Shutdown(ctx)
+		}
+	}
+
+	err = ec.Shutdown(ctx)
+	t.Logf("Port:%d is shut down", serverPort)
+	assert.NoError(t, err)
+}
 
 func TestIntegrationGetExpenseById(t *testing.T) {
 	ec := echo.New()

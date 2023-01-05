@@ -7,7 +7,7 @@ import (
 	"github.com/lib/pq"
 )
 
-func (h *Handler) CreateExpenses(c echo.Context) error {
+func (h *Handler) CreateExpense(c echo.Context) error {
 	e := new(Expense)
 	err := c.Bind(&e)
 

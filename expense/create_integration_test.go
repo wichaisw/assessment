@@ -19,7 +19,7 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestIntegrationCreateExpenses(t *testing.T) {
+func TestIntegrationCreateExpense(t *testing.T) {
 	ec := echo.New()
 	serverPort := 3001
 	connString := "postgresql://root:root@db/expensedb?sslmode=disable"
@@ -33,7 +33,7 @@ func TestIntegrationCreateExpenses(t *testing.T) {
 		}
 		h := NewHandler(db)
 
-		e.POST("/expenses", h.CreateExpenses)
+		e.POST("/expenses", h.CreateExpense)
 		e.Start(fmt.Sprintf(":%d", serverPort))
 		defer db.Close()
 	}(ec)

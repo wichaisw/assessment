@@ -15,7 +15,7 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestCreateExpenses(t *testing.T) {
+func TestCreateExpense(t *testing.T) {
 	expenseJson := `{"title":"buy a new phone","amount":39000,"note":"buy a new phone","tags":["gadget","shopping"]}`
 	expectedRes := `{"id":1,"title":"buy a new phone","amount":39000,"note":"buy a new phone","tags":["gadget","shopping"]}`
 
@@ -38,7 +38,7 @@ func TestCreateExpenses(t *testing.T) {
 	mockH := NewHandler(mockDb)
 
 	// ACT
-	err = mockH.CreateExpenses(c)
+	err = mockH.CreateExpense(c)
 	if err := mock.ExpectationsWereMet(); err != nil {
 		t.Errorf("there were unfulfilled expectations: %s", err)
 	}

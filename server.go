@@ -39,6 +39,7 @@ func main() {
 	e.GET("/health", health.GetHealthHandler)
 	expenseRoutes := e.Group("/expenses")
 	expenseRoutes.GET("/:id", h.GetExpenseById)
+	expenseRoutes.GET("", h.GetAllExpenses)
 	expenseRoutes.POST("", h.CreateExpenses)
 	expenseRoutes.PUT("/:id", h.UpdateExpenseById)
 

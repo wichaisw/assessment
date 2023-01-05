@@ -30,3 +30,21 @@ func (h *Handler) GetExpenseById(c echo.Context) error {
 		return c.JSON(http.StatusInternalServerError, Err{Message: "Error getting expenses by id on DB: " + err.Error()})
 	}
 }
+
+func (h *Handler) GetAllExpenses(c echo.Context) error {
+	query := `SELECT id, title, amount, note, tags FROM expenses`
+
+	rows, err := h.db.Query(query)
+	if err != nil {
+		return c.JSON(http.StatusInternalServerError, Err{Message: "Error querying all expense"})
+	}
+
+	expenses := []Expense{}
+	for rows.Next() {
+		var ex Expense
+		err = rows.Scan(&ex.Id, &ex.Title, &ex.Amount, &ex.Note, pq.Array(&ex.Tags))
+		expenses = append(expenses, ex)
+	}
+
+	return c.JSON(http.StatusOK, expenses)
+}

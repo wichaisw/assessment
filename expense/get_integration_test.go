@@ -119,16 +119,16 @@ func TestIntegrationGetExpenseById(t *testing.T) {
 	assert.NoError(t, err)
 	req.Header.Set(echo.HeaderContentType, echo.MIMEApplicationJSON)
 	client := http.Client{}
+	expectedRes := `{"id":1,"title":"strawberry smoothie","amount":79,"note":"night market promotion discount 10 bath","tags":["food","beverage"]}`
 
 	// Act
 	resp, err := client.Do(req)
 	assert.NoError(t, err)
 
+	// Assertion
 	byteBody, err := ioutil.ReadAll(resp.Body)
 	assert.NoError(t, err)
 	resp.Body.Close()
-
-	expectedRes := `{"id":1,"title":"strawberry smoothie","amount":79,"note":"night market promotion discount 10 bath","tags":["food","beverage"]}`
 
 	if assert.NoError(t, err) {
 		a1 := assert.Equal(t, http.StatusOK, resp.StatusCode)

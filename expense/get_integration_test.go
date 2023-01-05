@@ -18,7 +18,7 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestIntegrationCreateExpenses(t *testing.T) {
+func TestIntegrationGetExpenseById(t *testing.T) {
 	ec := echo.New()
 	serverPort := 3001
 
@@ -29,7 +29,7 @@ func TestIntegrationCreateExpenses(t *testing.T) {
 		}
 		h := NewHandler(db)
 
-		e.POST("/expenses", h.CreateExpenses)
+		e.GET("/expenses/:id", h.GetExpenseById)
 		e.Start(fmt.Sprintf(":%d", serverPort))
 		defer db.Close()
 	}(ec)
@@ -46,8 +46,8 @@ func TestIntegrationCreateExpenses(t *testing.T) {
 	}
 
 	// Arrange
-	reqBody := `{"title":"buy a new phone","amount":39000,"note":"buy a new phone","tags":["gadget","shopping"]}`
-	req, err := http.NewRequest(http.MethodPost, fmt.Sprintf("http://localhost:%d/expenses", serverPort), strings.NewReader(reqBody))
+	expenseId := 1
+	req, err := http.NewRequest(http.MethodGet, fmt.Sprintf("http://localhost:%d/expenses/%d", serverPort, expenseId), nil)
 	assert.NoError(t, err)
 	req.Header.Set(echo.HeaderContentType, echo.MIMEApplicationJSON)
 	client := http.Client{}
@@ -60,10 +60,10 @@ func TestIntegrationCreateExpenses(t *testing.T) {
 	assert.NoError(t, err)
 	resp.Body.Close()
 
-	expectedRes := `{"id":2,"title":"buy a new phone","amount":39000,"note":"buy a new phone","tags":["gadget","shopping"]}`
+	expectedRes := `{"id":1,"title":"strawberry smoothie","amount":79,"note":"night market promotion discount 10 bath","tags":["food","beverage"]}`
 
 	if assert.NoError(t, err) {
-		assert.Equal(t, http.StatusCreated, resp.StatusCode)
+		assert.Equal(t, http.StatusOK, resp.StatusCode)
 		assert.Equal(t, expectedRes, strings.TrimSpace(string(byteBody)))
 	}
 

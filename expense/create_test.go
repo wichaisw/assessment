@@ -15,18 +15,10 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-var (
-	// mockData = map[int]*Expense{
-	// 	0: {1, "buy a new phone", 39000, "buy a new phone", []string{"gadget", "shopping"}},
-	// 	1: {2, "apple smoothie", 89, "no discount", []string{"beverage"}},
-	// 	2: {3, "iPhone 14 Pro Max 1TB", 66900, "birthday gift from my love", []string{"gadget"}},
-	// 	3: {4, "strawberry smoothie", 79, "night market promotion discount 10 bath", []string{"food", "beverage"}},
-	// }
-	expenseJson = `{"title":"buy a new phone","amount":39000,"note":"buy a new phone","tags":["gadget","shopping"]}`
-	expectedRes = `{"id":1,"title":"buy a new phone","amount":39000,"note":"buy a new phone","tags":["gadget","shopping"]}`
-)
-
 func TestCreateExpenses(t *testing.T) {
+	expenseJson := `{"title":"buy a new phone","amount":39000,"note":"buy a new phone","tags":["gadget","shopping"]}`
+	expectedRes := `{"id":1,"title":"buy a new phone","amount":39000,"note":"buy a new phone","tags":["gadget","shopping"]}`
+
 	// ARRANGE
 	e := echo.New()
 	req := httptest.NewRequest(http.MethodPost, "/expenses", strings.NewReader(expenseJson))

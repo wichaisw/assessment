@@ -44,14 +44,13 @@ func TestGetExpenseById(t *testing.T) {
 		err = mockH.GetExpenseById(c)
 
 		// ASSERTION
-		if err := mock.ExpectationsWereMet(); err != nil {
-			t.Errorf("there were unfulfilled expectations: %s", err)
-		}
 		if assert.NoError(t, err) {
 			assert.Equal(t, http.StatusOK, rec.Code)
 			assert.Equal(t, expectedRes, strings.TrimSpace(rec.Body.String()))
 		}
-		rec.Flush()
+		if err := mock.ExpectationsWereMet(); err != nil {
+			t.Errorf("there were unfulfilled expectations: %s", err)
+		}
 	})
 
 	t.Run("should return error message if row not found", func(t *testing.T) {
@@ -69,13 +68,12 @@ func TestGetExpenseById(t *testing.T) {
 		err = mockH.GetExpenseById(c)
 
 		// ASSERTION
+		if assert.NoError(t, err) {
+			assert.Equal(t, http.StatusNotFound, rec.Code)
+			assert.Equal(t, expectedErr, strings.TrimSpace(rec.Body.String()))
+		}
 		if err := mock.ExpectationsWereMet(); err != nil {
 			t.Errorf("there were unfulfilled expectations: %s", err)
-		}
-
-		assert.Equal(t, http.StatusNotFound, rec.Code)
-		if assert.NoError(t, err) {
-			assert.Equal(t, expectedErr, strings.TrimSpace(rec.Body.String()))
 		}
 	})
 }
